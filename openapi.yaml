@@ -1,93 +1,121 @@
 openapi: 3.0.1
 info:
-  title: TODO Plugin
-  description: A plugin that allows the user to create and manage a TODO list using ChatGPT. If you do not know the user's username, ask them first before making queries to the plugin. Otherwise, use the username "global".
+  title: Paper Reading List Plugin
+  description: A plugin that allows the user to create and manage a list using ChatGPT of reading papers . If you do not know the user's username, ask them first before making queries to the plugin. Otherwise, use the username "global".
   version: 'v1'
 servers:
-  - url: http://localhost:5003
+  - url: http://localhost:5004
 paths:
-  /todos/{username}:
+  /papers/{username}:
     get:
-      operationId: getTodos
-      summary: Get the list of todos
+      operationId: getPapersTitle
+      summary: Get the list of paper titles which papers can be accessed by ChatGPT to answer questions
       parameters:
-      - in: path
-        name: username
-        schema:
+        - in: path
+          name: username
+          schema:
             type: string
-        required: true
-        description: The name of the user.
+          required: true
+          description: The name of the user.
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getTodosResponse'
+                $ref: '#/components/schemas/getPaperResponse'
     post:
-      operationId: addTodo
-      summary: Add a todo to the list
+      operationId: addPaperTitle
+      summary: Add a paper title to the list which have read by ChatGPT, so that it can be accessed by ChatGPT to answer questions
       parameters:
-      - in: path
-        name: username
-        schema:
+        - in: path
+          name: username
+          schema:
             type: string
-        required: true
-        description: The name of the user.
+          required: true
+          description: The name of the user.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/addTodoRequest'
+              $ref: '#/components/schemas/addPaperRequest'
       responses:
         "200":
           description: OK
     delete:
-      operationId: deleteTodo
-      summary: Delete a todo from the list
+      operationId: deletePaperTitle
+      summary: Delete a Paper Title from the list which have read by ChatGPT, so that it is not required be accessed by ChatGPT to answer questions
       parameters:
-      - in: path
-        name: username
-        schema:
+        - in: path
+          name: username
+          schema:
             type: string
-        required: true
-        description: The name of the user.
+          required: true
+          description: The name of the user.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/deleteTodoRequest'
+              $ref: '#/components/schemas/deletePaperRequest'
       responses:
         "200":
           description: OK
+  /papersRead/{username}:
+    get:
+      operationId: getPapersRead
+      summary: Get a paper title and the paper locally, which needs to be read by ChatGPT to answer questions. The title will also be added to the list of paper titles
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: The name of the user.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getPapersReadResponse'
+
 
 components:
   schemas:
-    getTodosResponse:
+    getPaperResponse:
       type: object
       properties:
-        todos:
+        paperTitles:
           type: array
           items:
             type: string
-          description: The list of todos.
-    addTodoRequest:
+          description: The list of paper titles, which have read by ChatGPT
+    addPaperRequest:
       type: object
       required:
-      - todo
+        - paper
       properties:
-        todo:
+        paperTitle:
           type: string
-          description: The todo to add to the list.
+          description: The paper title to add to the list which have read by ChatGPT
           required: true
-    deleteTodoRequest:
+    deletePaperRequest:
       type: object
       required:
-      - todo_idx
+        - temp_idx
       properties:
-        todo_idx:
+        paper_idx:
           type: integer
-          description: The index of the todo to delete.
+          description: The index of the paper title to delete from the list, so that it is not required be accessed by ChatGPT to answer questions
           required: true
+    getPapersReadResponse:
+      type: object
+      properties:
+        paperTitles:
+          type: string
+          description: The paper titles, which will be read by ChatGPT
+        papers:
+          type: string
+          description: The content of paper, which needs to be read by ChatGPT to answer questions
